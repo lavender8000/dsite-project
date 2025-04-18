@@ -1,0 +1,84 @@
+server:
+  # 服務配置
+  port: 8181
+  # 處理轉發請求的標頭（X-Forwarded-*）
+  forward-headers-strategy: framework
+
+spring:
+  # 數據源配置
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/lav_db_dsite}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA配置
+  jpa:
+    # database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  # OAuth2配置
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
+  
+  # Redis配置
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+
+# 配置日志
+logging:
+  file:
+    name: logs/dsite.log
+  level:
+    com.lav.dsite: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} %-5level - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} %-5level - %msg%n'
+
+# JWT 配置
+jwt:
+  # 發行者
+  issuer: ${JWT_SECRET:lav.com}
+  # 密鑰長度至少為 32 字節
+  secret: ${JWT_SECRET:}
+  # 有效時間(毫秒) (1 day)
+  expirationInMs: 86400000
+  # jwtTokenFiler 過濾鍊 例外URL
+  excludeUrls:
+    - path: /auth/**
+      methods:
+        - GET
+        - POST
+    - path: /posts
+      methods:
+        - GET
+    - path: /posts/{postId}
+      methods:
+        - GET
+    - path: /forums
+      methods:
+        - GET
+    - path: /users/{userId}/public
+      methods:
+        - GET
+  # 儲存 jwt token 的 cookie 名稱
+  cookieName: lav-jwt
+
+# 前端配置
+frontend:
+  baseUrl: ${FRONTEND_BASE_URL:https://dsite.ddns.net}
+  redirectUrl:
+    home: ${FRONTEND_REDIRECT_URL_HOME:https://dsite.ddns.net}
+    login: ${FRONTEND_REDIRECT_URL_LOGIN:https://dsite.ddns.net/login-oauth2-result}
+    link: ${FRONTEND_REDIRECT_URL_LINK:https://dsite.ddns.net/link-oauth2-result}
